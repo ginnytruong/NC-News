@@ -37,7 +37,7 @@ describe("GET /api/invalidpath", () => {
         });
     });
 
-describe.only("GET /api", () => {
+describe("GET /api", () => {
     test("returns descriptions from endpoints.js for all api endpoints", () => {
         return request(app)
         .get("/api")
