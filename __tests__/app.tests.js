@@ -3,6 +3,8 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
+const endpoints = require("../endpoints.json");
+
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -34,3 +36,15 @@ describe("GET /api/invalidpath", () => {
         });
         });
     });
+
+describe.only("GET /api", () => {
+    test("returns descriptions from endpoints.js for all api endpoints", () => {
+        return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+            const body = response.body;
+            expect(body).toEqual(endpoints);
+        })
+    })
+})

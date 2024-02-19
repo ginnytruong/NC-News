@@ -1,4 +1,6 @@
+const { dirname } = require("path");
 const db = require("./connection");
+const fs =require("fs/promises");
 
 exports.selectAllTopics = () => {
     const topicsSqlStr = `SELECT * FROM topics`;
@@ -11,3 +13,10 @@ exports.selectAllTopics = () => {
         return topics.rows;
     });
 };
+
+exports.selectAllEndPoints = () => {
+    return fs.readFile("endpoints.json", "utf-8")
+    .then((data) => {
+        return JSON.parse(data);
+    });
+    };
