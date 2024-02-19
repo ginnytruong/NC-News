@@ -16,7 +16,9 @@ describe("GET /api/topics", () => {
             const topics = response.body.topics;
             topics.forEach((topic) => {
                 expect(topic).toHaveProperty("slug");
+                expect(typeof topic.slug).toBe("string");
                 expect(topic).toHaveProperty("description");
+                expect(typeof topic.description).toBe("string")
             });
             });
         });

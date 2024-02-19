@@ -1,6 +1,4 @@
 const { selectAllTopics } = require("./model");
-const fs = require("fs/promises");
-
 
 exports.getAllTopics = (request, response, next) => {
     selectAllTopics()
