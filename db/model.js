@@ -50,9 +50,6 @@ exports.selectArticles = () => {
 
     return db.query(articlesSqlStr)
     .then((articles) => {
-        if(!articles.rows.length) {
-            return Promise.reject({status: 404, msg: "Not found"})
-        }
         return articles.rows;
     });
 };
@@ -62,9 +59,6 @@ exports.selectCommentsById = (article_id) => {
 
     return db.query(commentSqlStr, [article_id])
     .then((comments) => {
-		if (!comments.rows.length) {
-			return Promise.reject({ status: 404, msg: "Not found" });
-		}
-		return comments.rows;
+            return comments.rows;
 	});
-}
+};

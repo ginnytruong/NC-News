@@ -138,9 +138,36 @@ describe("GET /api/articles/:article_id/comments", () => {
                     votes: expect.any(Number),
                     created_at: expect.any(String),
                     author: expect.any(String),
-                    body: expect.any(String),
+                    body: expect.any(String)
                 });
             });
+        });
+    });
+    test("returns status code 404 Not found for an article_id that does not exist", () => {
+        return request(app)
+        .get("/api/articles/9999/comments")
+        .expect(404)
+        .then((response) => {
+            const { body } = response;
+            expect(body.msg).toBe("Not found");
+        });
+    });
+    test("returns status code 400 Bad request for an invalid article id", () => {
+        return request(app)
+        .get("/api/articles/invalid_id/comments")
+        .expect(400)
+        .then((response) => {
+            const { body } = response;
+            expect(body.msg).toBe("Bad request");
+        });
+    })
+    test("returns status code 200 & empty array for exisiting article id with no comments", () => {
+        return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then((response) => {
+            const { body } = response;
+            expect(body.comments).toEqual([]);
         });
     });
 });
