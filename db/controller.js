@@ -45,7 +45,16 @@ exports.getCommentsById = (request, response, next) => {
     const { article_id } = request.params;
     selectCommentsById(article_id)
     .then((comments) => {
-        response.status(200).send({comments})
+        if (comments.length === 0) {
+            return selectArticlesById(article_id)
+                .then((article) => {
+                    if (!article) {
+                        return response.status(404).send({msg: "Not found"});
+                    }
+                    return response.status(200).send({comments: []});
+                });
+        }
+        response.status(200).send({comments});
     })
     .catch((err) => {
         next(err);
