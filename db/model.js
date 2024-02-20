@@ -1,4 +1,3 @@
-const { dirname } = require("path");
 const db = require("./connection");
 const fs =require("fs/promises");
 
@@ -20,3 +19,20 @@ exports.selectAllEndPoints = () => {
         return JSON.parse(data);
     });
     };
+
+exports.selectArticles = (article_id) => {
+    if (!Number(article_id)) {
+		return Promise.reject({ status: 400, msg: "Bad request" });
+	}
+    const articleSqlStr = `SELECT * FROM articles WHERE article_id = $1`;
+    return db.query(articleSqlStr, [article_id])
+    .then((article) => {
+		if (article.rows.length === 0) {
+			return Promise.reject({ status: 404, msg: "Not found" });
+		}
+		return article.rows[0];
+	});
+};
+
+
+    
