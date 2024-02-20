@@ -15,12 +15,12 @@ describe("GET /api/topics", () => {
         .get("/api/topics")
         .expect(200)
         .then((response) => {
-            const topics = response.body.topics;
+            const {topics} = response.body;
             topics.forEach((topic) => {
-                expect(topic).toHaveProperty("slug");
-                expect(typeof topic.slug).toBe("string");
-                expect(topic).toHaveProperty("description");
-                expect(typeof topic.description).toBe("string")
+                expect(topic).toMatchObject({
+                    slug: expect.any(String),
+                    description: expect.any(String)
+                });
             });
             });
         });
@@ -32,7 +32,8 @@ describe("GET /api/invalidpath", () => {
         .get("/api/invalidpath")
         .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe("Not found");
+            const { body } = response;
+            expect(body.msg).toBe("Not found");
         });
         });
     });
@@ -43,7 +44,7 @@ describe("GET /api", () => {
         .get("/api")
         .expect(200)
         .then((response) => {
-            const body = response.body;
+            const { body } = response;
             expect(body).toEqual(endpoints);
         });
     });
@@ -55,9 +56,10 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
-            const { body } = response;
-            expect(body.article_id).toBe(1)
-            expect(body).toMatchObject({
+            const articles = response.body;
+            expect(articles.article_id).toBe(1);
+            expect(articles).toMatchObject({
+                article_id: expect.any(Number),
                 author: expect.any(String),
                 title: expect.any(String),
                 body: expect.any(String),
@@ -73,7 +75,8 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/9999")
         .expect(404)
         .then((response) => {
-            const {body} = response;
+            const body = response.body;
+            expect(body).toHaveProperty("msg")
             expect(body.msg).toBe("Not found");
         });
     });
@@ -82,8 +85,37 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/invalid_id")
         .expect(400)
         .then((response) => {
-            const {body} = response;
+            const body = response.body;
+            expect(body).toHaveProperty("msg")
             expect(body.msg).toBe("Bad request");
         });
     });
 });
+
+describe("GET /api/articles", () => {
+    test("returns status 200 & articles array of article", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+            const { body } = response;
+            expect(body.articles).toHaveLength(13);
+            expect(body.articles).toBeSortedBy('created_at', {
+                descending: true,
+              });
+            body.articles.forEach((article) => {
+                expect(article).not.toHaveProperty("body"); 
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                });
+            });
+            });
+        });
+    });

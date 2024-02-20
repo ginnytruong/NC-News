@@ -17,16 +17,43 @@ exports.selectAllEndPoints = () => {
     return Promise.resolve(endpoints);
     };
 
-exports.selectArticles = (article_id) => {
+exports.selectArticlesById = (article_id) => {
     const articleSqlStr = `SELECT * FROM articles WHERE article_id = $1`;
     return db.query(articleSqlStr, [article_id])
     .then((article) => {
-		if (article.rows.length === 0) {
+		if (!article.rows.length) {
 			return Promise.reject({ status: 404, msg: "Not found" });
 		}
 		return article.rows[0];
 	});
 };
 
+exports.selectArticles = () => {
+    const articlesSqlStr = `SELECT articles.article_id,
+    articles.author,
+    articles.title,
+    articles.topic,
+    articles.created_at,
+    articles.votes,
+    articles.article_img_url, 
+    COUNT(comments.comment_id) :: INT AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    GROUP BY articles.article_id,
+    articles.author,
+    articles.title,
+    articles.topic,
+    articles.created_at,
+    articles.votes,
+    articles.article_img_url
+    ORDER BY articles.created_at DESC`;
 
+    return db.query(articlesSqlStr)
+    .then((articles) => {
+        if(!articles.rows.length) {
+            return Promise.reject({status: 404, msg: "Not found"})
+        }
+        return articles.rows;
+    });
+};
     
