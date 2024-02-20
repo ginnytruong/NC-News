@@ -116,6 +116,31 @@ describe("GET /api/articles", () => {
                     comment_count: expect.any(Number)
                 });
             });
+         });
+    });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+    test("returns status code 200 & array of comments for requested article", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+            const { body } = response;
+            expect(body.comments).toHaveLength(11)
+            expect(body.comments).toBeSortedBy('created_at', {
+                descending: true,
+              });
+            body.comments.forEach((comment) => {
+                expect(comment.article_id).toBe(1);
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                });
             });
         });
     });
+});
