@@ -27,7 +27,7 @@ describe("GET /api/topics", () => {
     });
 
 describe("GET /api/invalidpath", () => {
-    test("returns status code 404 and msg 'Not found' when invalid path is input", () => {
+    test("returns status code 404 Not found when invalid path is input", () => {
         return request(app)
         .get("/api/invalidpath")
         .expect(404)
@@ -55,10 +55,9 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/1")
         .expect(200)
         .then((response) => {
-            const articles = response.body;
-            expect(articles.article_id).toBe(1);
-            expect(articles).toMatchObject({
-                article_id: expect.any(Number),
+            const { body } = response;
+            expect(body.article_id).toBe(1)
+            expect(body).toMatchObject({
                 author: expect.any(String),
                 title: expect.any(String),
                 body: expect.any(String),
@@ -74,8 +73,7 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/9999")
         .expect(404)
         .then((response) => {
-            const body = response.body;
-            expect(body).toHaveProperty("msg")
+            const {body} = response;
             expect(body.msg).toBe("Not found");
         });
     });
@@ -84,10 +82,8 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/invalid_id")
         .expect(400)
         .then((response) => {
-            const body = response.body;
-            expect(body).toHaveProperty("msg")
+            const {body} = response;
             expect(body.msg).toBe("Bad request");
         });
     });
 });
-

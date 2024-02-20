@@ -18,9 +18,6 @@ exports.selectAllEndPoints = () => {
     };
 
 exports.selectArticles = (article_id) => {
-    if (!Number(article_id)) {
-		return Promise.reject({ status: 400, msg: "Bad request" });
-	}
     const articleSqlStr = `SELECT * FROM articles WHERE article_id = $1`;
     return db.query(articleSqlStr, [article_id])
     .then((article) => {
