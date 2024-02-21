@@ -143,7 +143,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             });
         });
     });
-    test("returns status code 404 Not found for an article_id that does not exist", () => {
+    test("returns status code 404 Not found for a valid article_id that does not exist", () => {
         return request(app)
         .get("/api/articles/9999/comments")
         .expect(404)
@@ -169,5 +169,64 @@ describe("GET /api/articles/:article_id/comments", () => {
             const { body } = response;
             expect(body.comments).toEqual([]);
         });
+    });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+    test("returns status code 201 & posts new comment to the database", async () => {
+        const testComment = {
+            username: "butter_bridge",
+            body: "example comment here",
+        }
+        const response = await request(app)
+            .post("/api/articles/10/comments")
+            .send(testComment)
+            .expect(201);
+        const { body } = response;
+        expect(body.comment).toMatchObject({
+            body: testComment.body,
+            votes: 0,
+            author: testComment.username,
+            article_id: 10,
+            created_at: expect.any(String)
+        });
+    });
+    test("returns status code 404 Not found for an article_id that does not exist", async () => {
+        const response = await request(app)
+            .post("/api/articles/9999/comments")
+            .expect(404);
+        const { body } = response;
+        expect(body.msg).toBe("Not found");
+    })
+    test("returns status code 400 Bad request for an invalid article id", () => {
+        return request(app)
+        .post("/api/articles/invalid_id/comments")
+        .expect(400)
+        .then((response) => {
+            const { body } = response;
+            expect(body.msg).toBe("Bad request");
+        });
+    })
+    test("returns status code 400 Bad request when passed missing body property", async () => {
+        const testComment = {
+            username: "butter_bridge",
+        }
+        const response = await request(app)
+            .post("/api/articles/10/comments")
+            .send(testComment)
+            .expect(400);
+        const { body } = response;
+        expect(body.msg).toBe("Bad request");
+    });
+    test("returns status code 400 Bad request when passed missing user property", async () => {
+        const testComment = {
+            body: "example comment here",
+        }
+        const response = await request(app)
+            .post("/api/articles/10/comments")
+            .send(testComment)
+            .expect(400);
+        const { body } = response;
+        expect(body.msg).toBe("Bad request");
     });
 });
