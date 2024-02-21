@@ -56,9 +56,19 @@ exports.selectArticles = () => {
 
 exports.selectCommentsById = (article_id) => {
     const commentSqlStr = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`;
-
     return db.query(commentSqlStr, [article_id])
-    .then((comments) => {
+        .then((comments) => {
             return comments.rows;
-	});
+        });
 };
+
+exports.addCommentsById = (article_id, username, body) => {
+    if (!username || !body) {
+        return Promise.reject({ status: 400, msg: "Bad request" });
+    }
+    const insertCommentSqlStr = `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`;
+    return db.query(insertCommentSqlStr, [article_id, username, body])
+        .then((result) => {
+            return result.rows[0];
+        });
+}

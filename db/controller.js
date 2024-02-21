@@ -1,4 +1,4 @@
-const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById } = require("./model");
+const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById, addCommentsById } = require("./model");
 
 exports.getAllTopics = (request, response, next) => {
     selectAllTopics()
@@ -43,20 +43,29 @@ exports.getArticles = (request, response, next) => {
 
 exports.getCommentsById = (request, response, next) => {
     const { article_id } = request.params;
-    selectCommentsById(article_id)
-    .then((comments) => {
-        if (comments.length === 0) {
-            return selectArticlesById(article_id)
-                .then((article) => {
-                    if (!article) {
-                        return response.status(404).send({msg: "Not found"});
-                    }
-                    return response.status(200).send({comments: []});
-                });
-        }
-        response.status(200).send({comments});
-    })
+    selectArticlesById(article_id)
+        .then((article) => {
+            return selectCommentsById(article_id);
+        })
+        .then((comments) => {
+            response.status(200).send({ comments });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};
+
+exports.postCommentsById = (request, response, next) => {
+    const { username, body } = request.body;
+    const { article_id } = request.params;
+    selectArticlesById(article_id)
+        .then((article) => {
+            return addCommentsById(article_id, username, body)
+            .then((comment) => {
+                response.status(201).send({comment})
+            })
+        })
     .catch((err) => {
-        next(err);
-    });
+        next(err)
+    })
 };
