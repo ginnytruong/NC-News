@@ -250,7 +250,7 @@ describe("POST /api/articles/:article_id/comments", () => {
     });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
     test("returns status code 200 & increments votes by requested amount in specified article ", async () => {
         const newVotes = { inc_votes : 1 };
         const response = await request(app)
