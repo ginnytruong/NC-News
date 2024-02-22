@@ -315,3 +315,27 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
     })
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+    test("returns status 204 & delete request comment by comment_id", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(204);
+    });
+    test("returns status 404 Not found for non-exisiting comment_id", () => {
+        return request(app)
+			.delete("/api/comments/9999")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Not found");
+			});
+    });
+    test("returns status 404 Not found for invalid comment_id", () => {
+        return request(app)
+        .delete("/api/comments/invalidcomment_id")
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe("Bad request");
+        });
+    });
+});
