@@ -11,7 +11,6 @@ app.get("/api/articles", getArticles)
 app.get("/api/articles/:article_id/comments", getCommentsById)
 app.post("/api/articles/:article_id/comments", postCommentsById)
 
-
 app.use(handlePsqlErrors)
 app.use(handleErrors)
 
