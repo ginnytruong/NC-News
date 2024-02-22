@@ -191,6 +191,26 @@ describe("POST /api/articles/:article_id/comments", () => {
             created_at: expect.any(String)
         });
     });
+    test("returns status 201 & ignores any unnecessary properties provided on the posted body", async () => {
+        const testComment = {
+            username: "butter_bridge",
+            body: "example comment here",
+            unnecessary: "to be ignored!"
+        }
+        const response = await request(app)
+        .post("/api/articles/10/comments")
+        .send(testComment)
+        .expect(201);
+        const { body } = response;
+        expect(body).not.toHaveProperty("unnecessary");
+        expect(body.comment).toMatchObject({
+            body: testComment.body,
+            votes: 0,
+            author: testComment.username,
+            article_id: 10,
+            created_at: expect.any(String)
+        });
+    });
     test("returns status code 404 Not found for an article_id that does not exist", async () => {
         const response = await request(app)
             .post("/api/articles/9999/comments")
