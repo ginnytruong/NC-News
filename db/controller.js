@@ -1,4 +1,4 @@
-const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById, addCommentsById } = require("./model");
+const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById, addCommentsById, updateArticleVotes } = require("./model");
 
 exports.getAllTopics = (request, response, next) => {
     selectAllTopics()
@@ -68,4 +68,16 @@ exports.postCommentsById = (request, response, next) => {
     .catch((err) => {
         next(err)
     })
+};
+
+exports.patchArticleById = (request, response, next) => {
+    const { inc_votes } = request.body;
+    const { article_id } = request.params;
+    updateArticleVotes(article_id, inc_votes)
+        .then((updatedArticle) => {
+            response.status(200).send(updatedArticle);
+        })
+        .catch((err) => {
+            next(err);
+        });
 };

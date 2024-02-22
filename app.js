@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-const { getAllTopics, getAllEndPoints, getArticlesById, getArticles, getCommentsById, postCommentsById } = require("./db/controller");
+const { getAllTopics, getAllEndPoints, getArticlesById, getArticles, getCommentsById, postCommentsById, patchArticleById } = require("./db/controller");
 const { handleErrors, handlePsqlErrors } = require("./error-handler");
 
 app.get("/api/topics", getAllTopics)
@@ -10,6 +10,7 @@ app.get("/api/articles/:article_id", getArticlesById)
 app.get("/api/articles", getArticles)
 app.get("/api/articles/:article_id/comments", getCommentsById)
 app.post("/api/articles/:article_id/comments", postCommentsById)
+app.patch("/api/articles/:article_id", patchArticleById)
 
 app.use(handlePsqlErrors)
 app.use(handleErrors)
