@@ -57,9 +57,8 @@ describe("GET /api/articles/:article_id", () => {
         .expect(200)
         .then((response) => {
             const articles = response.body;
-            expect(articles.article_id).toBe(1);
             expect(articles).toMatchObject({
-                article_id: expect.any(Number),
+                article_id: 1,
                 author: expect.any(String),
                 title: expect.any(String),
                 body: expect.any(String),
@@ -249,4 +248,70 @@ describe("POST /api/articles/:article_id/comments", () => {
         const { body } = response;
         expect(body.msg).toBe("Bad request");
     });
+});
+
+describe.only("PATCH /api/articles/:article_id", () => {
+    test("returns status code 200 & increments votes by requested amount in specified article ", async () => {
+        const newVotes = { inc_votes : 1 };
+        const response = await request(app)
+            .patch("/api/articles/3")
+            .send(newVotes)
+            .expect(200);
+        const article = response.body;
+        expect(article).toMatchObject({
+            article_id: 3,
+            author: expect.any(String),
+            title: expect.any(String),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 1,
+            article_img_url: expect.any(String)
+        });
+    });
+    test("returns status code 200 & decrements votes by requested amount in specified article ", async () => {
+        const newVotes = { inc_votes : -1 };
+        const response = await request(app)
+            .patch("/api/articles/3")
+            .send(newVotes)
+            .expect(200);
+        const article = response.body;
+        expect(article).toMatchObject({
+            article_id: 3,
+            author: expect.any(String),
+            title: expect.any(String),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: -1,
+            article_img_url: expect.any(String)
+        });
+    })
+    test("returns status code 404 Not found for an article_id that does not exist", async () => {
+        const newVotes = { inc_votes : 1 };
+        const response = await request(app)
+            .patch("/api/articles/9999")
+            .send(newVotes)
+            .expect(404);
+        const { body } = response;
+        expect(body.msg).toBe("Not found");
+    })
+    test("returns status code 400 Bad request for an invalid article_id", async () => {
+        const newVotes = { inc_votes : 1 };
+        const response = await request(app)
+            .patch("/api/articles/invalid_id")
+            .send(newVotes)
+            .expect(400);
+        const { body } = response;
+        expect(body.msg).toBe("Bad request");
+    })
+    test("returns status code 400 Bad request when vote value is not a number ", async () => {
+        const newVotes = { inc_votes : "one" };
+        const response = await request(app)
+            .patch("/api/articles/6")
+            .send(newVotes)
+            .expect(400);
+        const { body } = response;
+        expect(body.msg).toBe("Bad request");
+    })
 });
