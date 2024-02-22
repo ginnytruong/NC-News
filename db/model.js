@@ -103,3 +103,15 @@ return db.query(deleteSqlStr, [comment_id])
         return comment.rows[0];
     });
 };
+
+exports.allUsers = () => {
+    const usersSqlStr = `
+    SELECT username, name, avatar_url
+    FROM users
+`;
+    return db
+    .query(usersSqlStr)
+    .then((user) => {
+        return user.rows;
+    })
+};
