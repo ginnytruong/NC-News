@@ -10,9 +10,9 @@ Link to the hosted version here: https://ginny-nc-news.onrender.com
 ## Set Up
 ### Note to Developers
 To establish connection with the databases, two environment (.env) files must be set up initally. 
-
 Create .env.development and .env.test files each containing "PGDATABASE=" followed by the respective database name.
 Once environment files are set up, install dotenv.
+
 
 For a local copy of this API, please follow the below instructions:
 - fork and clone this Github repo
