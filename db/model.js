@@ -15,18 +15,41 @@ exports.selectAllTopics = () => {
 
 exports.selectAllEndPoints = () => {
     return Promise.resolve(endpoints);
-    };
+};
 
 exports.selectArticlesById = (article_id) => {
-    const articleSqlStr = `SELECT * FROM articles WHERE article_id = $1`;
+    const articleSqlStr = `SELECT 
+    articles.article_id,
+    articles.author,
+    articles.title,
+    articles.body,
+    articles.topic,
+    articles.created_at,
+    articles.votes,
+    articles.article_img_url,
+    COUNT(comments.comment_id) :: INT AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY 
+    articles.article_id, 
+    articles.author, 
+    articles.title, 
+    articles.body, 
+    articles.topic, 
+    articles.created_at, 
+    articles.votes, 
+    articles.article_img_url`
+        
     return db.query(articleSqlStr, [article_id])
     .then((article) => {
-		if (!article.rows.length) {
-			return Promise.reject({ status: 404, msg: "Not found" });
-		}
-		return article.rows[0];
-	});
+        if (!article.rows.length) {
+            return Promise.reject({ status: 404, msg: "Not found" });
+        }
+        return article.rows[0];
+    });
 };
+    
 
 exports.selectArticles = (topic) => {
     let articlesSqlStr = `SELECT 
