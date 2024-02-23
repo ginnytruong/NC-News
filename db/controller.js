@@ -1,6 +1,5 @@
 const { request } = require("../app");
 const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById, addCommentsById, updateArticleVotes, deleteComment, allUsers } = require("./model");
-const db = require("./connection");
 
 exports.getAllTopics = (request, response, next) => {
     selectAllTopics()
