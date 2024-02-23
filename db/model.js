@@ -51,7 +51,15 @@ exports.selectArticlesById = (article_id) => {
 };
     
 
-exports.selectArticles = (topic) => {
+exports.selectArticles = async (topic) => {
+    let queryParams = [];
+    if (topic) {
+        queryParams = [topic];
+        const topicExists = await db.query('SELECT * FROM topics WHERE slug = $1', queryParams);
+        if (!topicExists.rows.length) {
+            return Promise.reject({ status: 404, msg: "Not found" });
+        }
+    }
     let articlesSqlStr = `SELECT 
         articles.article_id,
         articles.author,
@@ -64,7 +72,7 @@ exports.selectArticles = (topic) => {
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
-    if(topic) {
+    if (topic) {
         articlesSqlStr += ' WHERE articles.topic = $1';
     }
 
@@ -77,28 +85,9 @@ exports.selectArticles = (topic) => {
         articles.votes,
         articles.article_img_url
         ORDER BY articles.created_at DESC`;
-    
-    let queryParams;
-    if (topic) {
-        queryParams = [topic];
-    } else {
-        queryParams = [];
-    }
         
-    return db.query(articlesSqlStr, queryParams)
-    .then((articles) => {
-        if(!articles.rows.length && topic) {
-            return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
-            .then((topics) => {
-                if(!topics.rows.length){
-                    return Promise.reject({ status: 404, msg: "Not found" });
-                } else {
-                    return articles.rows;
-                }
-            });
-        }
-        return articles.rows;
-    });
+    const articles = await db.query(articlesSqlStr, queryParams);
+    return articles.rows;
 };
 
 exports.selectCommentsById = (article_id) => {

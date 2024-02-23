@@ -1,5 +1,6 @@
 const { request } = require("../app");
 const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById, addCommentsById, updateArticleVotes, deleteComment, allUsers } = require("./model");
+const db = require("./connection");
 
 exports.getAllTopics = (request, response, next) => {
     selectAllTopics()
@@ -32,7 +33,7 @@ exports.getArticlesById = (request, response, next) => {
     });
 };
 
-exports.getArticles = (request, response, next) => {
+exports.getArticles = async (request, response, next) => {
     const { topic } = request.query;
     selectArticles(topic)
     .then((articles) => {
