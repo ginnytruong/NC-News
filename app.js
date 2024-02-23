@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-const { getAllTopics, getAllEndPoints, getArticlesById, getArticles, getCommentsById, postCommentsById, patchArticleById, deleteCommentById, getUsers } = require("./db/controller");
+const { getAllTopics, getAllEndPoints, getArticlesById, getArticles, getCommentsById, postCommentsById, patchArticleById, deleteCommentById, getUsers } = require("./controllers/controller");
 const { handleErrors, handlePsqlErrors } = require("./error-handler");
 
 app.get("/api/topics", getAllTopics)
