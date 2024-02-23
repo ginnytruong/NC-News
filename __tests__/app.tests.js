@@ -98,6 +98,7 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then((response) => {
             const { body } = response;
+            expect(Array.isArray(body.articles)).toBe(true);
             expect(body.articles).toHaveLength(13);
             expect(body.articles).toBeSortedBy('created_at', {
                 descending: true,
@@ -357,5 +358,40 @@ describe("GET /api/users", () => {
                 })
             })
         })
+    });
+});
+
+describe("GET /api/articles (topic query)", () => {
+    test("returns status code 200 & array of articles filtered by requested topic", () => {
+        return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+            const { body } = response;
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles).toHaveLength(1);
+            body.articles.forEach((article) => {
+                expect(article.topic).toBe("cats")
+            });
+        });
+    });
+    test("returns status code 200 & empty array when requested a valid topic with no existing articles", () => {
+        return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then((response) => {
+            const { body } = response;
+            expect(Array.isArray(body.articles)).toBe(true);
+            expect(body.articles).toEqual([])
+        });
+    });
+    test("returns status code 404 Not found when requested an invalid topic", () => {
+        return request(app)
+        .get("/api/articles?topic=invalidtopic")
+        .expect(404)
+        .then((response) => {
+            const { body } = response;
+            expect(body.msg).toBe("Not found");
+        });
     });
 });

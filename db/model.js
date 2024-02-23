@@ -28,28 +28,52 @@ exports.selectArticlesById = (article_id) => {
 	});
 };
 
-exports.selectArticles = () => {
-    const articlesSqlStr = `SELECT articles.article_id,
-    articles.author,
-    articles.title,
-    articles.topic,
-    articles.created_at,
-    articles.votes,
-    articles.article_img_url, 
-    COUNT(comments.comment_id) :: INT AS comment_count
-    FROM articles
-    LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id,
-    articles.author,
-    articles.title,
-    articles.topic,
-    articles.created_at,
-    articles.votes,
-    articles.article_img_url
-    ORDER BY articles.created_at DESC`;
+exports.selectArticles = (topic) => {
+    let articlesSqlStr = `SELECT 
+        articles.article_id,
+        articles.author,
+        articles.title,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url, 
+        COUNT(comments.comment_id) :: INT AS comment_count
+        FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
-    return db.query(articlesSqlStr)
+    if(topic) {
+        articlesSqlStr += ' WHERE articles.topic = $1';
+    }
+
+    articlesSqlStr += ` GROUP BY 
+        articles.article_id,
+        articles.author,
+        articles.title,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url
+        ORDER BY articles.created_at DESC`;
+    
+    let queryParams;
+    if (topic) {
+        queryParams = [topic];
+    } else {
+        queryParams = [];
+    }
+        
+    return db.query(articlesSqlStr, queryParams)
     .then((articles) => {
+        if(!articles.rows.length && topic) {
+            return db.query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+            .then((topics) => {
+                if(!topics.rows.length){
+                    return Promise.reject({ status: 404, msg: "Not found" });
+                } else {
+                    return articles.rows;
+                }
+            });
+        }
         return articles.rows;
     });
 };
