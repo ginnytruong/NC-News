@@ -1,4 +1,3 @@
-const { request } = require("../app");
 const { selectAllTopics, selectAllEndPoints, selectArticlesById, selectArticles, selectCommentsById, addCommentsById, updateArticleVotes, deleteComment, allUsers } = require("../models/model");
 
 exports.getAllTopics = (request, response, next) => {

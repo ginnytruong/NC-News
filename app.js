@@ -1,9 +1,8 @@
+const express = require("express");
+const app = express();
 const cors = require('cors');
 app.use(cors());
 
-
-const express = require("express");
-const app = express();
 app.use(express.json());
 const { getAllTopics, getAllEndPoints, getArticlesById, getArticles, getCommentsById, postCommentsById, patchArticleById, deleteCommentById, getUsers } = require("./controllers/controller");
 const { handleErrors, handlePsqlErrors } = require("./error-handler");
