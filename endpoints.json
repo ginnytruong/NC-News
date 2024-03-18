@@ -94,16 +94,14 @@
     "exampleResponse": {}
   },
   "GET /api/users": {
-    "description": "retrieves array of all comments by its article id",
+    "description": "retrieves array of user infomation",
     "queries": [],
     "exampleResponse": {
-      "comments": [
+      "users": [
         { 
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "votes": 16,
-          "author": "butter_bridge",
-          "article_id": 9,
-          "created_at": 1586179020000
+          "username": "tickle122",
+          "name": "Tom Tickle",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
         }
       ]
     }
